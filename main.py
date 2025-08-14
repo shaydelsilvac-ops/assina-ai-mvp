@@ -1,15 +1,21 @@
 from fastapi import FastAPI, Request
+from pydantic import BaseModel
 import os
+
 from supabase_client import buscar_usuario_por_telefone, criar_usuario
 from openai_client import interpretar_mensagem
+from whatsapp import enviar_mensagem
 
 app = FastAPI()
 
+class WebhookPayload(BaseModel):
+    mensagem: str
+    telefone: str
+
 @app.post("/webhook")
-async def webhook(request: Request):
-    data = await request.json()
-    mensagem = data.get("mensagem")
-    telefone = data.get("telefone")
+async def webhook(payload: WebhookPayload):
+    mensagem = payload.mensagem
+    telefone = payload.telefone
 
     if not telefone or not mensagem:
         return {"erro": "mensagem ou telefone ausente"}
@@ -23,4 +29,12 @@ async def webhook(request: Request):
         }
 
     resposta = interpretar_mensagem(mensagem)
+    
+    # Opcional: envia resposta automática para o WhatsApp
+    enviar_mensagem(telefone, resposta)
+
     return {"resposta": resposta}
+
+@app.get("/webhook")
+def verificar():
+    return "Endpoint de verificação GET (Meta)"
