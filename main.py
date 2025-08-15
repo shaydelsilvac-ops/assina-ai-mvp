@@ -33,8 +33,12 @@ async def webhook(request: Request):
 
 
 @app.get("/webhook")
-def verificar(token: str = "", challenge: str = "", mode: str = ""):
-    VERIFY_TOKEN = "assinaai2024"  # Esse é o token que você define no app da Meta
-    if token == VERIFY_TOKEN and mode == "subscribe":
-        return int(challenge)
-    return {"erro": "Token de verificação inválido"}
+async def verificar(request: Request):
+    params = request.query_params
+    if (
+        params.get("hub.mode") == "subscribe" and
+        params.get("hub.verify_token") == "assinaai2024"
+    ):
+        return int(params.get("hub.challenge"))
+    return {"erro": "Token inválido"}
+
