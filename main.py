@@ -1,7 +1,5 @@
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
-import os
-
 
 from supabase_client import buscar_usuario_por_telefone, criar_usuario
 from openai_client import interpretar_mensagem
@@ -24,14 +22,14 @@ async def webhook(payload: WebhookPayload):
     usuario = buscar_usuario_por_telefone(telefone)
 
     if not usuario:
+        texto = "Por favor, envie seu nome completo, e-mail e data de nascimento para cadastro."
+        enviar_mensagem(telefone, texto)
         return {
             "status": "novo_usuario",
-            "mensagem": "Por favor, envie seu nome completo, e-mail e data de nascimento para cadastro."
+            "mensagem": texto
         }
 
     resposta = interpretar_mensagem(mensagem)
-    
-    # Opcional: envia resposta automática para o WhatsApp
     enviar_mensagem(telefone, resposta)
 
     return {"resposta": resposta}
