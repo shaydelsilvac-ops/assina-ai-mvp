@@ -6,6 +6,11 @@ from whatsapp import enviar_mensagem
 app = FastAPI()
 
 
+@app.get("/")
+def home():
+    return {"mensagem": "API Assina Aí está no ar 🎉"}
+
+
 @app.post("/webhook")
 async def webhook(request: Request):
     data = await request.json()
