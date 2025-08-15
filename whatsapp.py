@@ -17,3 +17,4 @@ def enviar_mensagem(numero_destino: str, mensagem: str):
     }
     response = requests.post(WHATSAPP_API_URL, headers=headers, json=payload)
     return response.status_code, response.json()
+
