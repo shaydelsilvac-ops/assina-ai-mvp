@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from pydantic import BaseModel
 import os
 
+
 from supabase_client import buscar_usuario_por_telefone, criar_usuario
 from openai_client import interpretar_mensagem
 from whatsapp import enviar_mensagem
